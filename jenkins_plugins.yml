@@ -1,0 +1,16 @@
+- name: Install Jenkins and its plugins
+  hosts: localhost
+  vars:
+    jenkins_hostname: localhost
+    jenkins_plugins:
+      - git
+      - terraform
+      - ssh
+      - gerrit-trigger
+      - blueocean
+      - ansible
+      - ssh-slaves
+
+  roles:
+    - role: geerlingguy.jenkins
+      become: yes
