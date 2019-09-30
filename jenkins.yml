@@ -28,13 +28,6 @@
         state: present
         with_dependencies: yes
 
-    - name: Restart jenkins service, Wait untils Jenkins web API is available
-      shell: curl --head --silent http://localhost:8080/cli/
-      register: result
-      until: result.stdout.find("200 OK") != -1
-      retries: 12
-      delay: 5
-
   roles:
     - role: geerlingguy.jenkins
       become: yes
