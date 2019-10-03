@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  vars:
+    jenkins_version: "2.191"
+
+  tasks:
+    - name: get remote jenkins admin password file
+      become: yes
+      slurp:
+        src: /var/lib/jenkins/secrets/initialAdminPassword
+      register: adminpasswordfile
+      no_log: True
+
+    - name: set jenkins admin password
+      set_fact:
+        jenkins_admin_password: "{{ adminpasswordfile.content | b64decode | trim }}"
+        jenkins_admin_password: "{{ adminpasswordfile.stdout }}"
+        no_log: True
+
+    - name: install jenkins
+      include_role:
+        name: geerlingguy.jenkins
+
+  roles:
+    - role: geerlingguy.java
+      java_packages:
+        - openjdk-8-jdk
+
+    - role: geerlingguy.jenkins
+      no_log: false #Also fails without this
+      jenkins_package_state: latest
+      jenkins_plugins_state: latest
+      jenkins_http_port: 8080
+      jenkins_plugins:
+        - blueocean
+        - git
+        - pipeline-model-definition
+        - terraform
+        - ansible
+      become: true
